@@ -22,6 +22,21 @@ void test_multiplication(void)
     TEST_ASSERT_TRUE_MESSAGE(z == 5, "Multiplication of two integers returned incorrect value.");
 }
 
+void test_upper_to_lower()
+{
+    
+}
+
+void test_lower_to_upper()
+{
+
+}
+
+void test_non_numeric()
+{
+
+}
+
 int main (void)
 {
     stdio_init_all();
