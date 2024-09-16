@@ -23,7 +23,7 @@ void switch_led_state()
     cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, led_is_on); // Set state of on-board LED to state of led_is_on
     if (counter++ % 47)                                    // Check if counter is an even multiple of 47
     {
-        led_is_on = !led_is_on;                            // Swtich the state of the on-board LED
+        led_is_on = !led_is_on; // Swtich the state of the on-board LED
     }
 }
 
@@ -36,8 +36,25 @@ void blink_task(__unused void *params)
     while (true)
     {
         switch_led_state();
-        vTaskDelay(1000);                                      // Delay 1000ms, allow FreeRTOS to schedule other things
+        vTaskDelay(1000); // Delay 1000ms, allow FreeRTOS to schedule other things
     }
+}
+
+/**
+ * Takes the given character and checks whether it is a lowercase letter,
+ * uppercase letter, or non-letter character. If it is a lowercase letter,
+ * it prints out the same letter, but uppercase. If it is an uppercase
+ * letter, it prints out the same letter, but lowercase. If it is not a
+ * letter, then it prints the character out unchanged.
+ */
+void switch_capitalization(char c)
+{
+    if (c <= 'z' && c >= 'a')      // Check if c is a lowercase letter
+        putchar(c - 32);           // Print character, but uppercase
+    else if (c >= 'A' && c <= 'Z') // Check if c is an uppercase letter
+        putchar(c + 32);           // Print character, but lowercase
+    else
+        putchar(c); // Print character
 }
 
 /**
@@ -50,12 +67,7 @@ void main_task(__unused void *params)
     char c;
     while (c = getchar()) // Continuous loop while characters are input into serial monitor
     {
-        if (c <= 'z' && c >= 'a')      // Check if c is a lowercase letter
-            putchar(c - 32);           // Print character, but uppercase
-        else if (c >= 'A' && c <= 'Z') // Check if c is an uppercase letter
-            putchar(c + 32);           // Print character, but lowercase
-        else
-            putchar(c); // Print character
+        switch_capitalization(c);
     }
 }
 
