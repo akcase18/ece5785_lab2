@@ -4,6 +4,7 @@
 #include "pico/stdlib.h"
 #include "pico/multicore.h"
 #include "pico/cyw43_arch.h"
+#include "main.h"
 
 #define MAIN_TASK_PRIORITY (tskIDLE_PRIORITY + 2UL)
 #define BLINK_TASK_PRIORITY (tskIDLE_PRIORITY + 1UL)
@@ -14,17 +15,24 @@
 int counter;
 bool led_is_on;
 
-/**
- * Turns the on-board LED on or off according to the global boolean "led_is_on",
- * and switches the state of "led_is_on" once counter is a multiple of 47.
- */
-void switch_led_state()
+bool switch_led_state(bool led_state)
 {
-    cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, led_is_on); // Set state of on-board LED to state of led_is_on
+    cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, led_state); // Set state of on-board LED to state of led_is_on
     if (counter++ % 47)                                    // Check if counter is an even multiple of 47
     {
-        led_is_on = !led_is_on; // Swtich the state of the on-board LED
+        led_state = !led_state; // Swtich the state of the on-board LED
     }
+    return led_state;
+}
+
+char switch_capitalization(char c)
+{
+    if (c <= 'z' && c >= 'a')      // Check if c is a lowercase letter
+        return c - 32;           // Return character, but uppercase
+    else if (c >= 'A' && c <= 'Z') // Check if c is an uppercase letter
+        return c + 32;           // Return character, but lowercase
+    else
+        return c; // Return character
 }
 
 void blink_task(__unused void *params)
@@ -35,27 +43,11 @@ void blink_task(__unused void *params)
     cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, false); // Turn off on-board LED
     while (true)
     {
-        switch_led_state();
+        led_is_on = switch_led_state(led_is_on);
         vTaskDelay(1000); // Delay 1000ms, allow FreeRTOS to schedule other things
     }
 }
 
-/**
- * Takes the given character and checks whether it is a lowercase letter,
- * uppercase letter, or non-letter character. If it is a lowercase letter,
- * it prints out the same letter, but uppercase. If it is an uppercase
- * letter, it prints out the same letter, but lowercase. If it is not a
- * letter, then it prints the character out unchanged.
- */
-void switch_capitalization(char c)
-{
-    if (c <= 'z' && c >= 'a')      // Check if c is a lowercase letter
-        putchar(c - 32);           // Print character, but uppercase
-    else if (c >= 'A' && c <= 'Z') // Check if c is an uppercase letter
-        putchar(c + 32);           // Print character, but lowercase
-    else
-        putchar(c); // Print character
-}
 
 /**
  * Switches the capitalization of any letters that are entered, and prints it out
@@ -67,7 +59,7 @@ void main_task(__unused void *params)
     char c;
     while (c = getchar()) // Continuous loop while characters are input into serial monitor
     {
-        switch_capitalization(c);
+        putchar(switch_capitalization(c)); // Print the output of the function
     }
 }
 
