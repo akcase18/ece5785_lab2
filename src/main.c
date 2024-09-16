@@ -4,7 +4,7 @@
 #include "pico/stdlib.h"
 #include "pico/multicore.h"
 #include "pico/cyw43_arch.h"
-#include "main.h"
+#include "lab2.h"
 
 #define MAIN_TASK_PRIORITY (tskIDLE_PRIORITY + 2UL)
 #define BLINK_TASK_PRIORITY (tskIDLE_PRIORITY + 1UL)
@@ -15,26 +15,6 @@
 int counter;
 bool led_is_on;
 
-bool switch_led_state(bool led_state)
-{
-    cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, led_state); // Set state of on-board LED to state of led_is_on
-    if (counter++ % 47)                                    // Check if counter is an even multiple of 47
-    {
-        led_state = !led_state; // Swtich the state of the on-board LED
-    }
-    return led_state;
-}
-
-char switch_capitalization(char c)
-{
-    if (c <= 'z' && c >= 'a')      // Check if c is a lowercase letter
-        return c - 32;           // Return character, but uppercase
-    else if (c >= 'A' && c <= 'Z') // Check if c is an uppercase letter
-        return c + 32;           // Return character, but lowercase
-    else
-        return c; // Return character
-}
-
 void blink_task(__unused void *params)
 {
     counter = 0;
@@ -43,11 +23,11 @@ void blink_task(__unused void *params)
     cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, false); // Turn off on-board LED
     while (true)
     {
-        led_is_on = switch_led_state(led_is_on);
+        counter++;
+        led_is_on = switch_led_state(led_is_on, counter);
         vTaskDelay(1000); // Delay 1000ms, allow FreeRTOS to schedule other things
     }
 }
-
 
 /**
  * Switches the capitalization of any letters that are entered, and prints it out
