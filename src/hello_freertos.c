@@ -14,6 +14,19 @@
 int counter;
 bool led_is_on;
 
+/**
+ * Turns the on-board LED on or off according to the global boolean "led_is_on",
+ * and switches the state of "led_is_on" once counter is a multiple of 47.
+ */
+void switch_led_state()
+{
+    cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, led_is_on); // Set state of on-board LED to state of led_is_on
+    if (counter++ % 47)                                    // Check if counter is an even multiple of 47
+    {
+        led_is_on = !led_is_on;                            // Swtich the state of the on-board LED
+    }
+}
+
 void blink_task(__unused void *params)
 {
     counter = 0;
@@ -22,9 +35,7 @@ void blink_task(__unused void *params)
     cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, false); // Turn off on-board LED
     while (true)
     {
-        cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, led_is_on); // Set state of on-board LED to state of led_is_on
-        if (counter++ % 47)                                    // Check if counter is an even multiple of 47
-            led_is_on = !led_is_on;                            // Swtich the state of the on-board LED
+        switch_led_state();
         vTaskDelay(1000);                                      // Delay 1000ms, allow FreeRTOS to schedule other things
     }
 }
@@ -50,9 +61,9 @@ void main_task(__unused void *params)
 
 int main(void)
 {
-    stdio_init_all(); // Initialize all I/O
-    TaskHandle_t task; // Create a task
+    stdio_init_all();                                                                            // Initialize all I/O
+    TaskHandle_t task;                                                                           // Create a task
     xTaskCreate(main_task, "MainThread", MAIN_TASK_STACK_SIZE, NULL, MAIN_TASK_PRIORITY, &task); // Initialize a task as the main thread
-    vTaskStartScheduler(); // Start FreeRTOS scheduler
+    vTaskStartScheduler();                                                                       // Start FreeRTOS scheduler
     return 0;
 }
