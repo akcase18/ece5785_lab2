@@ -25,6 +25,7 @@ void blink_task(__unused void *params)
     {
         counter++;
         led_is_on = switch_led_state(led_is_on, counter);
+        cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, led_is_on); // Set state of on-board LED to state of led_is_on
         vTaskDelay(1000); // Delay 1000ms, allow FreeRTOS to schedule other things
     }
 }

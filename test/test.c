@@ -5,15 +5,9 @@
 #include "unity_config.h"
 #include "lab2.h"
 
-void setUp(void)
-{
+void setUp(void) {}
 
-}
-
-void tearDown(void)
-{
-
-}
+void tearDown(void) {}
 
 void test_upper_to_lower()
 {
@@ -53,6 +47,50 @@ void test_non_numeric()
     TEST_ASSERT_TRUE_MESSAGE(output == '+', "Input was modified. Test failed.");
 }
 
+void test_toggle_led()
+{
+    /* State shouldn't change */
+    int counter = 0;
+    bool led_state = false;
+    bool output_state = switch_led_state(led_state, counter);
+    TEST_ASSERT_FALSE_MESSAGE(output_state == true, "Switched when it wasn't supposed to (False --> True), counter = 0");
+    led_state = true;
+    output_state = switch_led_state(led_state, counter);
+    TEST_ASSERT_FALSE_MESSAGE(output_state == false, "Switched when it wasn't supposed to (True --> False), counter = 0");
+    /* State should change */
+    counter = 1;
+    led_state = false;
+    output_state = switch_led_state(led_state, counter);
+    TEST_ASSERT_TRUE_MESSAGE(output_state == true, "Failed on False --> True, counter = 1");
+    led_state = true;
+    output_state = switch_led_state(led_state, counter);
+    TEST_ASSERT_TRUE_MESSAGE(output_state == false, "Failed on True --> False, counter = 1");
+    /* State should change */
+    counter = 26;
+    led_state = false;
+    TEST_ASSERT_TRUE_MESSAGE(switch_led_state(led_state, counter) == true, "Failed on False --> True, counter = 26");
+    led_state = true;
+    TEST_ASSERT_TRUE_MESSAGE(switch_led_state(led_state, counter) == false, "Failed on True --> False, counter = 26");
+    /* State shouldn't change */
+    counter = 47;
+    led_state = false;
+    TEST_ASSERT_FALSE_MESSAGE(switch_led_state(led_state, counter) == true, "Switched when it wasn't supposed to (False --> True), counter = 47");
+    led_state = true;
+    TEST_ASSERT_FALSE_MESSAGE(switch_led_state(led_state, counter) == false, "Switched when it wasn't supposed to (True --> False), counter = 47");
+    /* State should change */
+    counter = 83;
+    led_state = false;
+    TEST_ASSERT_TRUE_MESSAGE(switch_led_state(led_state, counter) == true, "Failed on False --> True, counter = 83");
+    led_state = true;
+    TEST_ASSERT_TRUE_MESSAGE(switch_led_state(led_state, counter) == false, "Failed on True --> False, counter = 83");
+    /* State shouldn't change */
+    counter = 141;
+    led_state = false;
+    TEST_ASSERT_FALSE_MESSAGE(switch_led_state(led_state, counter) == true, "Switched when it wasn't supposed to (False --> True), counter = 141");
+    led_state = true;
+    TEST_ASSERT_FALSE_MESSAGE(switch_led_state(led_state, counter) == false, "Switched when it wasn't supposed to (True --> False), counter = 141");
+}
+
 int main (void)
 {
     stdio_init_all();
@@ -60,5 +98,6 @@ int main (void)
     RUN_TEST(test_upper_to_lower);
     RUN_TEST(test_lower_to_upper);
     RUN_TEST(test_non_numeric);
+    RUN_TEST(test_toggle_led);
     return UNITY_END();
 }
