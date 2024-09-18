@@ -37,7 +37,7 @@ void test_lower_to_upper()
     }
 }
 
-void test_non_numeric()
+void test_not_a_letter()
 {
     char output = switch_capitalization('5');
     TEST_ASSERT_TRUE_MESSAGE(output == '5', "Input was modified. Test failed.");
@@ -97,7 +97,7 @@ int main (void)
     UNITY_BEGIN();
     RUN_TEST(test_upper_to_lower);
     RUN_TEST(test_lower_to_upper);
-    RUN_TEST(test_non_numeric);
+    RUN_TEST(test_not_a_letter);
     RUN_TEST(test_toggle_led);
     return UNITY_END();
 }
