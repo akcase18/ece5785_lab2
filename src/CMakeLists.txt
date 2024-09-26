@@ -1,6 +1,7 @@
 # This is the main binary. List your C files here.
 add_executable(myproject
-    main.c
+main.c
+lab2.c
     )
 
 pico_set_program_name(myproject "test")
